@@ -1,0 +1,1017 @@
+
+\section{Introduction}
+
+Inconspicuous in Sentiment Analysis (SA) state of the art is the ability to predict the sentiment kindled in a hearer or reader when presented a piece of text. In other words, what sentiment will a particular hearer or group of hearers express given a piece of text? This question is significantly different from conventional sentiment analysis, which is commonly aimed at predicting the sentiment of the text's author or the sentiment expressed in the text. Let us consider an utterance: ``Company A's shares will drop next week''. On the surface, this utterance expresses a negative sentiment. However, from a human perspective, the sentiment expressed is open to who the hearer is and the context from which the sentence and its component subjects are perceived by the hearer. Assuming the hearer has a stake in Company A, it is very likely, that such a hearer would express a negative sentiment. Conversely, if the hearer belongs to a rival company, it is not unlikely that such a hearer would express a positive sentiment. This problem is called the author-reader standpoint because the sentiment expressed by the author of a sentence does not necessarily translate to that expressed by the recipient (Liu, 2012). Thus, the purpose of this paper is to develop and implement an innovative approach for predicting recipient sentiment i.e. addressing the author-reader stand point problem.
+
+
+There have been very few attempts at solving the author-user standpoint problem. However, common approaches have had their foundations in the use of socio-theoretic principles such as Affect Control Theory (Ahothali \& Hoey, 2015; Heise, 1987; Mejova, 2012), appraisal theory (Bloom, 2011) and frame semantics (Bhowmick, 2009; Fillmore, 1982). Similarly, the approach taken in this paper also stems from a social concept: human values. We propose that the sentiment of a reader towards an utterance is a form of human behaviour, which in turn is influenced and determined by the values of the reader or hearer (Templeton et al, 2011a, 2011b). In fact, the definition of values as fundamental abstract coordinators of behaviour and guides for preference of one situation over another (Rokeach, 1973), substantiates the link between sentiment as a form of human behaviour and values. It is values that guides preference for one state, substance, entity, concept, idea etc. over another and sentiment in itself is an expression of preference for one state over another. Therefore, to develop a model that predicts reader or hearer sentiment, such a model needs to incorporate the values of the recipient. 
+
+
+One benefit of applying values in recipient sentiment prediction is to enable the estimation of sentiments in objective evaluative sentences (OES). Objective evaluative sentences are sentences which do not contain any explicit sentiments, are not subjective and whose sentiments are implied. Traditional SA methodologies and algorithms have succeeded in identifying these types of sentences but there has not been much success at assigning the polarity. Part of the problem lies in the one-size-fits all nature of SA, as well as the inability of current SA approaches to match the utterance to diverse sentiment holders. Let us consider two examples ``We will exit the EU'', ``I paid \pounds 1000 for the new office software''. Both these statements are objective and do not carry any explicit sentiments, however both contain implied sentiments. In exiting the `EU', a person with values consistent with remaining in the `EU' will view it as negative and similarly, a person with open-source software values will perceive the latter statement as negative. Traditional sentiment analysis methodologies are unlikely to make these differentiations, and in fact some SA implementations are likely to assign the first sentence a negative polarity because of the presence of the seemingly negative linguistic unit `exit'. For such OES, the use of traditional sentiment analysis methods in the determination of the sentiment would result in poor or spurious predictions primarily because of the absence of human centric reference points. This paper proposes that the inclusion of human values in a sentiment model can remedy this problem. \\
+\noindent \textbf{What are Values?}
+\newline Research in the application and formalization of values has been an on-going task in the social sciences and humanities. Expectedly, these fields have evolved a significant proportion of the theory and methodologies adopted today in the classification, formalization and application of values. Several definitions of values exist (Hitlin, 2003; Hitlin and Piliavin, 2004; Rohan, 2000). Values have always been perceived as an abstract concept. In fact, Perry (1926) defined it as a philosophical concept or belief associated closely with virtuous living and morality. Similarly, Williams (1979) expressed values as interests, pleasures, likes, preferences, moral obligations, desires, wants, goals, needs, aversions, attractions and many other kind of selective orientations (Perry, 1926). Rokeach (Rokeach, 1973) attempted to provide a uniform definition and conceptualization of values defining values as ``abstract fundamental coordinators of behaviour''. `Abstract' representing an unquantifiable, non-physical entity and `coordinators of behaviour' implying that for any form of behaviour for which sentiment is a type, values represent the primary causal factor. Similarly, Verplanken and Holland (2002) expressed values as ``latent variables that have explanatory value for the choices people make''. Schwartz (1996), Feather (1995) and Bardi and Schwartz (2003) reinforce this notion of values as causative to behaviour referring to values as principal determinants of behaviour and attitude. 
+
+
+Several research works have shown the influence of human values on behaviour. Schwartz (1992) and Schwartz (n.d(a)), showed that on the subject of gay marriage, people with traditional values were more likely to be in opposition or have a negative sentiment. Conversely, people with hedonistic values were most likely to view the subject positively. Bengston et al (2004) showed that on environmental issues, specifically afforestation, the types of values held by individuals had an implication on the policies and goals for public forest management.\\
+\noindent \textbf{Value Models}
+\newline Values are modeled directly from value holders or by analysing recorded communication in textual materials like speeches, debates, testimonies, reports and utterances. In either case, the task involves the detection of value motivations and items, their categorization into inventories or classes and finally aggregation into value orientations. Methods used in accomplishing these aims are centred principally on empirical surveys of value holders (Scott, 1965; Schwartz, 1994; Schwartz, 2004a, 2004b; Schwartz, 2012, McDonald and Gandz, 1991; Braithwaite and Scott, 1991), content analysis of textual content (Cheng and Fleischmann, 2010; Callicott et al, 2000; Ishita et al, 2010) and human/theoretical analysis (Rokeach, 1973). This detection is carried out by researchers and domain/subject experts who using any of the methods, come up with a list of value items which are normally words, expressions or concepts usually nouns, verbs or adjectives that reflect expected desires and actions. The enumerated words could be sourced intuitively, that is the researcher/s uses his/her intuition or experience to itemize a list of expected items. They could also be derived from reviewing literature and conducting surveys on domain experts.
+
+For instance, in Schwartz (1994) the goal was to identify a set of basic human values to which 56 basic human value items were identified, Scott (1965), identified 12 value items for the goal of identifying personal traits for ideal relations, Kahle et al (1988), identified 9 value items required to measure consumer attitudes and behaviour and finally, Crace and Brown (1996), in developing values for decision making itemized 14 value items. Items describe abstract values and can be statistically graded e.g. a scale of 1-10 or 1-5. The value items are eventually grouped together into value types by the researchers. A collection of value types form the model of values called a value inventory (VI). The VI is a model that represents a set of value types and their constituent items. It provides explicit categories for the analysis of human values. 
+
+Several VI's exist: Schwartz's (1992, 2012) value conceptualization focused on the notion that human values are based on motivational goals and needs that are basically universal across all cultures and peoples. Hence, the set of values identified by Schwartz are generic and applicable to social issues. Rokeach (1973) conceptualized values from two perspectives, where in one case, the values are perceived as a set of ultimate goals called terminal values, in the second, they are perceived as modes of behaviour. The result of this was a list of 36 value items categorized into terminal and instrumental value types. Bernthal (1962), proposed a hierarchy of values for management decisions based purely on rational reasoning. The inventories contained – the business firm level, economic system level, societal level and individual level. Personal Values Questionnaire (PVQ) (England, 1967) comprised of 66 value items organized into 5 categories. Inventories are thus instruments or models used in determining values. 
+
+Nevertheless, VIs have several deficiencies. Value items by nature are an enumerated list, and as such there is no way to determine an exhaustive list of items which capture all possible values especially because values have been shown to vary with time and because contexts evolve (Rokeach, 1973; Gurel-Atay et al, 2010). Value inventories are also subjective and their implementation involves significant human involvement and expense in the form of content analysis or empirical surveys (Cheng and Fleischmann, 2010; Scott, 1965; Takayama et al, 2014). These methodological gaps validate the need for an approach that is flexible, easily applicable to multiple domains and finally one that can be implemented without the express need of human annotations or content analysis. Therefore, the question sought to be answered by this paper is as follows:  How can human values be modeled without human input? Secondly, given a sentence with implicit or explicit sentiments, can the value model be applied towards the prediction of the individual's sentiment polarity? In other words, can the behaviour (sentiment) of the hearer or reader of an utterance or piece of text be predicted from a model of his/her values?\\
+\noindent \textbf{Value Models to Sentiment Prediction}
+\newline To differentiate the model in this research from contemporary value models, it is vital to provide an overview of how values are modelled and applied to sentiment prediction. The journey from abstract values to full sentiment prediction is a five-stage process which for the purposes of this thesis is called Value-Sentiment Model (VSM). Figure 3 depicts this five-stage process.
+Each stage of the VSM has a goal. In figure 3, the methodologies and outcome of each goal are depicted. The journey from abstract values to sentiment prediction using abstract values is a process where the output of one stage is fed to the next. This accounts for the arrows shown in figure 3, that point from one stage to the stage directly below. 
+
+
+\begin{comment}
+As a new technology, Wireless Sensor Networks (WSNs) has a wide
+range of applications \cite{Culler-01, Bahl-02, Akyildiz-01}, including
+environment monitoring, smart buildings, medical care, industrial and
+military applications. Among them, a recent trend is to develop
+commercial sensor networks that require pervasive sensing of both
+environment and human beings, for example, assisted living
+\cite{Akyildiz-02, Harvard-01,CROSSBOW} and smart homes
+\cite{Harvard-01, Adya-01,CROSSBOW}.
+% quote
+\begin{quote}
+  ``For these applications, sensor devices are incorporated into human
+  cloths \cite{Natarajan-01, Zhou-06, Bahl-02, Adya-01} for monitoring
+  health related information like EKG readings, fall detection, and
+  voice recognition''.
+\end{quote}
+While collecting all these multimedia information
+\cite{Akyildiz-02} requires a high network throughput, off-the-shelf
+sensor devices only provide very limited bandwidth in a single
+channel: 19.2\,Kbps in MICA2 \cite{Bahl-02} and 250\,Kbps in MICAz.
+
+In this article, we propose MMSN, abbreviation for Multifrequency
+Media access control for wireless Sensor Networks. The main
+contributions of this work can be summarized as follows.
+% itemize
+\begin{itemize}
+\item To the best of our knowledge, the MMSN protocol is the first
+multifrequency MAC protocol especially designed for WSNs, in which
+each device is equipped with a single radio transceiver and
+the MAC layer packet size is very small.
+\item Instead of using pairwise RTS/CTS frequency negotiation
+\cite{Adya-01, Culler-01, Tzamaloukas-01, Zhou-06},
+we propose lightweight frequency assignments, which are good choices
+for many deployed comparatively static WSNs.
+\item We develop new toggle transmission and snooping techniques to
+enable a single radio transceiver in a sensor device to achieve
+scalable performance, avoiding the nonscalable ``one
+control channel + multiple data channels'' design \cite{Natarajan-01}.
+\end{itemize}
+\end{comment}
+
+% Head 1
+\section{Related Work}
+A significant proportion of SA has focused on the sentiment of the author, and as such literature on recipient sentiment prediction is quite limited. Existing research has not solely involved the prediction of the recipient's sentiment but related areas such as the prediction of the recipient's emotion or the prediction of the recipient's stance. The common approaches can be summed up into two distinct categories: Text and Knowledgebase methodologies and socio-theoretic methodologies. We consider these in the next section.
+% Head 2
+\subsection{Text and Knowledgebase Approach}
+This approach is based on identifying patterns and features in text, utilizing an external domain knowledgebase or ontology, identifying and applying discourse patterns in sentences and utterances. Tang and Chen (2011) performed emotion detection of writer and recipient emotion in a chat room. Emotion detection involves identifying the emotion expressed in a sentence e.g. anger, disgust, fear, happiness, sadness and surprise (Strapparava \& Mihalcea, 2007). Their approach required the identification and annotation of emotions in both the reader and recipient content. Recipients (readers) in the chat network label sentences with optional quantifying emotions like `Likes', `Shares', `Gives', `Hates', `Wants', `Wishes', `Needs', `Will', `Hopes', `Asks' etc. In addition, contributions in the chat room were labelled as positive or negative. As such sentences were labelled for their emotional content and mapped to a semantic orientation, ensuring that both linguistic and human centric features are captured and harnessed in the development of the model. Additional human centric features like the social relations between writers were also captured and fed into the model. The eventual supervised model was shown to have an accuracy in the range of 80.67\% and 88.37\% for predicting the reader's emotion. Although this model performs quite well, it required considerable human involvement in the annotation of the content and even in the collection of user centric behaviour. Similarly, Lin et al (2007) and Lin and Chen (2008) adopted a familiar approach in estimating the emotion of readers from a manually tagged Yahoo! Kimo news corpus. A corpus was tagged based on eight emotional classes by humans and linguistic features such as character bigrams, presence of emotional words and content metadata were extracted and applied in their model. They reported an accuracy of 76.88\%. Again, in this approach we observe the introduction of human annotations and the division of reader emotion into classes which makes the approach quite rigid since human emotions could belong to more than one class.
+
+
+Attempts have also been made in predicting the stance of an individual or group. Stance detection is the task of classifying perspectives e.g. for or against something and it has been applied in a variety of sectors and domains ranging from politics (Thomas et al, 2006; Somasundaram and Wiebe, 2009, 2010) to online debates on a variety of subjects (Murakami and Raymond, 2010). Besides Sridhar et al (2014), most of the work on stance detection focuses on detecting the stance expressed by the writer (Thomas et al, 2006; Murakami and Raymond, 2010; Somasundaran and Wiebe, 2009, 2010). Sridhar et al (2014) implemented a stance detection approach using both linguistic and the structural arrangement of the debates in online posts as features in classifying the stance on gun control and gay marriage. Linguistic features such as the length of a speech, word counts, discourse cues and punctuation count are applied. The most unique feature applied was the incorporation of author information. However, this implementation was dependent on hand annotated stances for each sentence in the training set. That is each sentence in the training set contained a marker saying if it was pro or anti a subject. They obtain an average F1 score of 74\% for the positive class. 
+
+
+In applying this approach, a group of recurrent limitations are observed. The involvement of humans in annotating, tagging and classifying a corpus for ground truth, makes it expensive and time consuming. In addition, dependence on manually constructed knowledgebase or affect lexicon results in a model that is rigid, domain dependent and incapable of catering to diverse contexts. Finally, in basing the approach on patterns and linguistic features, human centric features such as behaviour, relationship between the subjects are not emphasized, although Sridhar et al (2014) and Tang and Chen (2011) incorporate such features. In the next section, we describe socio-theoretic approaches which tend to focus more on incorporating human centric features.
+
+
+\subsection{Socio-Theoretic Approaches}
+These approaches tend to incorporate social theories which model or describe abstract human behaviour in sentiment or emotion detection. Examples of social theories include Affect Control Theory, Frame theory and Appraisal theory.  They are typically applied in stance detection, emotion classification, identification of implicit objective sentences. 
+In this section, we discuss Affect Control Theory (ACT), a sociology theory that has been applied in SA and in particular recipient sentiment prediction. 
+ACT is a social psychological theory of human interaction (Heise, 2007). It suggests that ``certain cultural norms dictate the affective meanings of words that people in a culture with a common language share''. It computes this affective meaning of an event or concept - events or concepts are expressed as words -- in a multi-dimensional semantic space (Robinson and Smith-Lovin, 2006; Mejova, 2012) that consists of Evaluation, Potency and Activity (EPA). 
+
+
+In ACT, empirical equations are derived for a wide-ranging set of situations associated with an event. The affective sentiment of cultures is derived or measured using a survey technique called semantic differential derived by Osgood et al (1957), the basis of which is not so different from the empirical surveys applied in modeling values. Basically, individuals with knowledge of a culture rate concepts on a numerical scale with opposing adjectives at each end. In fact, a database of concepts expressed as words and their average EPA ratings derived from survey participants who are knowledgeable about their culture has been collected in Heise (2010). For instance, in the example given by Ahothali and Joey (2015), the culturally shared EPA for the concept `mother' in Ontario Canada is given as [2.74, 2.04, 0.67] which is interpreted as quite good, quite powerful and slightly active. Whereas in the same place, the concept `daughter' has an EPA of [2.18, -0.01, 1.92], which is interpreted as quite good, less powerful and more active than mother. These values are derived from ACT equations. ACT lexicons have been compiled for several countries and cultures including USA, Canada, Germany, China and Northern Ireland (Robinson and Smith-Lovin, 2006; Mejova, 2012). Additionally, ACT lexicons have also been developed for groups within societies such as religious groups (Smith-Lovin and Douglas, 1992), state troopers (Heise, 1979) and internet users (King, 2001). Mejova (2012), showed that sentiment orientation classifiers which make use of ACT lexicons outperforms traditional SA classifiers. Mejova showed that using three variations of ACT compared to a sentiment analysis algorithm, the accuracy of the system was between 71.9\% and 80.3\%. The accuracy of the positive class polarity was between 64.2\% and 85.7\%, while the accuracy of the negative polarity class was between 77.5\% and 78.1\%. However, it was indicated in the experiments of Mejova (2012) that a major flaw in the ACT approach is that the ACT lexicon is limited and so does not necessarily account for all possible words that can be used to describe a situation. However, Ahothali and Joey (2015) implemented an approach for increasing the dataset or vocabulary of ACT words. Unlike the work of Mejova (2012) which focused on the sentiment of the reader, Ahothali and Joey (2015) applied ACT in analysing reader sentiment towards factual objective content. They computed reader sentiment using ACT equations and evaluated their approach against traditional SA approaches on news headlines. This resulted in a precision of between 68\% and 82\%. Like Mejova (2012), they also showed better performance compared to traditional SA methods. 
+
+
+A unique benefit of ACT is that due to the lexicons and equations obtained for each culture, using the approach in Ahothali and Joey (2015) or Mejova (2012), it is possible to predict the sentiment of a recipient in cultures for which there exists a lexicon. Nevertheless, these lexicons are limited and do not encompass all cultures or situations. More so, the lexicon is generated by empirical surveys, which involve considerable human effort and time. Therefore, while ACT clearly incorporates human centric features, there is still a gap in the research methodologies for an approach that is independent of human annotations or input and one that is not dependent on a knowledgebase of human values.  
+
+
+Other socio-theoretic approaches used in SA have focused on the sentiment of the writer. One such theory involves frames. Frames ``capture the background knowledge that competent speakers use when producing and understanding utterance'' (Ruppenhofer, 2013). The fundamental idea behind frames is that people understand the meaning of a word based on the frames they evoke and that these frames are ``story fragments which serve to connect a group of words to a bundle of meanings'' (Ruppenhofer et al, 2016). Ruppenhofer et al (2016) illustrates with an example, where the term avenger evokes the Revenge frame, which describes a complex series of events and the group of participants involved in the event. The knowledgebase of frames is collated from human annotations of sentences, involving the identification of possible frames expressed in the sentence and the participants. As a resource, frames capture the contextual implication of words and participants involved in the discourse and so this makes it ideal for SA related tasks. Frames have been applied in aspects of sentiment analysis including the identification of multiple opinions, identification of opinion source and opinion target (Ruppenhofer, 2013). More so, the work of Bhomwick et al (2009) which classifies the emotion of readers from sentences is the only work that was identified in this research that applies frames in recipient emotion. The emotion of readers was categorised into four classes - disgust, fear, happiness and sadness. They showed that the inclusion of word frames as feature vectors performed better than the use of just words and their POS. The overall F1 score of their approach was 82.1\%. Nevertheless, the use of frames highlights the gap in the research in that the inclusion of frames in the SA methodology requires the annotation or labelling of sentences into emotion classes as was the case in Bhomwick et al (2009). By having a fixed set of emotion classes, the application is already restricted to those classes and thus unable to account for variations in emotion or even sentences that portray multiple emotions.
+
+
+It is evident that both text/knowledgebase and Socio-theoretic approaches are hampered by the challenge associated with the inclusion of human involvement in their implementation. We also observe that both approaches emphasize different feature sets: The former emphasizing social and human-centric features while the latter emphasizes textual patterns and linguistic clues. The goal then is to implement a solution that addresses the issues associated with human involvement i.e. eliminate or vastly reduce the need for human annotations, tags or empirical surveys, while still incorporating human-centric social features and linguistic clues and patterns embedded in the text. In the next section, we provide a description of the model design.
+
+\section{Value Model Design}
+The basis of the value model described in this paper, stems from the notion that although values are abstract and unseen, they are implicitly observed in human behaviour and the utterances and they make. According to Entman (1993), a speaker conveying a message about an entity or subject will ``select aspects of a perceived reality, and make it more salient in a communicating text, in such a way as to promote'' a particular view point. Therefore, the verbal descriptions or linguistic units used in describing an event portray the underlying values held by the speaker towards the event or subject matter. Based on this observation, the requisite question would be what set of linguistic units, features or identifiers embedded within a sentence represent expressed values. To answer this, we undertake a process called value decomposition which entails the identification of the constituent parameters which make up values from observed text. The necessity for value decomposition arises from the requirement to not introduce human input in the value model process. Values decomposition provides a theoretical framework for the extraction of value items and their categories. To accomplish this, we identify clues, and recurring patterns in the definition and characteristics of values and use these to define the constituent features of values. Consider the following values definitions.\\
+Values are -- 
+\begin{quotation}
+``The criteria through which people use to evaluate actions, people and events.'' (Schwartz, 2006)
+\end{quotation}
+\begin{quotation}
+``Abstract coordinators of behaviour.'' (Rokeach, 1973)
+\end{quotation}
+\begin{quotation}
+``Latent variables that have explanatory value for the choices people make.'' (Verplanken and Holland, 2002).
+\end{quotation}
+\begin{quotation}
+``The belief that a specific mode of conduct or end state is personally or socially preferable to an opposite mode of conduct or end state.'' (Rokeach, 1973)
+\end{quotation}
+\begin{quotation}
+``Determining factors for choices and a guide for determining what is desirable.'' (Guth and Taguiri, 1965; Kluckhorn, 1951).
+\end{quotation}
+\begin{quotation}
+``Concepts that point out why a behaviour is acceptable or which state or behaviour is most acceptable from a set of options.'' (Hutcheon, 1972).
+\end{quotation}
+\begin{quotation}
+``What is important to an individual'' (Friedman et al, 2006).
+\end{quotation}
+\begin{quotation}
+``Principles encompassing abstract goals in life and modes of conduct that an individual or a collective considers preferable across contexts and situations'' (Braithwaite and Blamey, 1988).
+\end{quotation}
+
+
+From these definitions, when values are portrayed as beliefs, we observe that the definitions refer to the `end state' or `mode of conduct'. As concepts, it refers to `determining what is desirable' which reflects a question of choice i.e. selecting from a choice of states, features or possible events etc. While as a motivation, reference is made to `what is important' or the `motivation behind an action'. We observe from this that every value as a belief, concept or motivation is directed at an object or entity, which could be abstract or real and would have a set of states, properties or features. The value could also address a state or aspect of the event/entity. Therefore, a value is made up of the following constituent parameters:
+\begin{itemize}
+\item
+Value Holder ($H$) -- Values are developed and applied by value holders. Value holders could be individuals or groups such as societies, clubs, political parties. 
+\item
+Subject of the Value ($\theta$) -- According to Schwartz (2006) values are criteria through which people use to evaluate actions, people and events. Therefore, a value must refer to a subject. The subject of the value is the object, entity, event, person, item, place that is referred to in the expression of the value. The subject of the value could be a real or abstract entity. Linguistically, they are typically nouns or Noun Phrases (NP).
+\item
+State ($S$) -- In the definitions, above, phrases such as `end state', `mode of conduct', `what is desirable' reflect a question of choice and preference. A person's value for a subject will be his preference for a state of the subject; where state refers to a position, marked feature or property of the subject that is preferred amongst a set of features. For instance, on the subject `house prices', states could include words and phrases such as `high', `low', `expensive', `exorbitant', `affordable', `stable' etc. (Use of these words and phrases are a form of linguistic grading). The value of value holders would be a preference for one of the states. Linguistic elements used to express states are adjectives or adverbs.
+\item
+Action ($A$) -- For any subject, the preference of the value holder also extends to the preferred action or activity to be carried out or performed by or on the subject. Reference to phrases like `motivation', `specific mode of conduct', `specific mode of action' and `end state' suggest that the essence of the value also refers to an action, a conduct or an activity to be performed. In fact, the preferred state action refers to the `action, activity or process' undertaken on the subject or by the subject that is most preferred by the value holder. For instance, in the sentence, ``We have a plan to destroy terrorist groups across the region'', the preferred action on the subject `terrorist group', is `the plan to destroy'. Using the `house prices' analogy, actions could include phrases such as `increased', `reduce', `rocketed', `risen', `plummeted', `rebounded', `raised'. Actions are typically verbs or verb phrases.
+\item
+Context ($C$) -- Context refers to existential factors that are usually outside the control of the value holder. These factors include elements such as time and place, background knowledge of the speaker or hearer, the expectations of people, the location and the nature of the subject matter. This list of existential factors is not exhaustive. They could also be static -- factors that are fixed and unchanging such as date of birth, address etc. or dynamic -- factors that are constantly changing e.g. temperature, preference, desires, social environment etc. (Henricksen et al, 2002). The value conceptualization of Braithwaite and Blamey (1988) which states that values are ``principles encompassing abstract goals in life and modes of conduct that an individual or a collective considers preferable across contexts and situations'' reinforces the notion that the applicability of a value is dependent on the context. 
+\end{itemize}
+
+In summary, these definitions show that values are made up of five parameters: the value holder ($H$), the subject of the value ($\theta$), the preferred state ($S$), preferred action ($A$) and the context ($C$). Together, these parameters are called Value Components (VC) and represent a formalism for translating abstract values as sentences. Thus, given a large corpus of utterances by a value holder, the value model would be a function ($f$), that takes a text and maps it to a value representation: $V = f(H,\theta,S,A,C)$.
+
+
+To identify VCs embedded in utterances, three assumptions are made: 
+\begin{itemize}
+\item
+The granularity of an utterance  expressing a value is a sentence called a Value Laden Sentences (VLS). These are statements that impart a personal value that may not be true in the strictest sense but are based on personal opinions or values. They reflect the bias of an author or the speaker while also reflecting the priorities and ideas of the speaker.
+\item
+Each VLS can be expressed as a sequence of words.
+\item
+Consequently, a VLS is a sequence of words $\langle w_1 \ldots w_n\rangle$ (where $n$ is an integer and $n > 1$), which express the preferred action $w_a$ or preferred state $w_s$ of a subject $w_\theta$. Subjects, actions and states could be multiple words or phrases which function as a single unit. For example, the sentence ``We will reduce taxes by 2 percent in our first year in Government'' contains the subject `taxes' and a multi-word action `will reduce'. In the sentence ``EU Taxes will be reduced by 2 percent to take it to an all-time low'' contains a multi-word subject `EU Taxes', an action `will be reduced' and a preferred state `all time low'.
+\end{itemize}
+
+
+Based on these assumptions a structure for value laden sentences emerges. A VLS as a sequence of words made by a value holder ($H$) under a particular context ($C$). Since the objective of the VLS is to express the preferred state or action on a given subject matter/s, the sequence of words which constitute the VLS must include at least one value subject ($\theta$) and express at least one action ($A$) and/or preferred state ($S$). For example, the sentence ``We will reduce taxes by 2 percent in our first year in Government'' contains one main subject `taxes', an action `reduce' and a preferred state `by 2 percent'. These core words are priority words called content words. Therefore, the VCs in the utterance are content words. Assuming the value holder, -- the speaker -- is a known entity, the remaining words in the sentence belong to a second category of words called function or helper words whose aim is to connect the actions, states and subjects in a manner that conveys the intended meaning. Function words are a class of words in English grammar that are contrary to content words in that they bear no semantic relevance (Fries, 1952). They are generally restricted to 9 grammatical classes as shown in Table~\ref{tab:one}. 
+
+% Table
+\begin{table}%
+\caption{Function word classes and examples}
+\label{tab:one}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{ll}
+  \toprule
+  Word Class   &  Example\\
+  \toprule
+  Auxiliary verbs     & Am, are, be, is\\
+  Conjunction  & Or, and, but, while\\
+  Determiner     & A, the\\
+  Exclamation    & Yes, No\\
+  Interjection/Disfluencies   & Uh, em, huh, duh\\
+  Modals       & Could, would\\
+  Particles     & No, not, then, if, thus\\
+  Preposition & Of, in, at, between\\
+  Negation     & Not, never, no\\
+  \bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+\paragraph{} 
+Let actions, subject and preferred states -- the lexical components of the value -- as $\lambda_A$, $\lambda_\theta$, $\lambda_S$ and the function words as $F$, a VLS could take any of the following sample formats (The \emph{`START'} and \emph{`STOP'} signal to mark the beginning and end of the sequence)--
+\begin{center}
+Sentence 1 -- $\langle START,F,F,\lambda_A,F,\lambda_\theta,F,STOP \rangle$\\
+Sentence 2 -- $\langle START,F,\lambda_\theta,F,\lambda_A,F,\lambda_A,F,\lambda_\theta,F,STOP \rangle$\\
+Sentence 3 -- $\langle START,F,\lambda_\theta,F,\lambda_S,F,F,F,STOP \rangle$ \\
+\end{center}
+
+Consider the sentence,\emph{``We will implement more apprenticeship programmes for young people in the winter''}. Assuming the value holder is known, the sequence of words expressed above can be represented as the sequence $\langle START,F_1,\lambda_A,\lambda_S,\lambda_\theta,STOP \rangle$, where, 
+\begin{center}
+
+\emph{`We'} = $F_1$\\
+\emph{`will implement'}= $\lambda_A$\\
+\emph{`more'} = $\lambda_S$\\
+\emph{`apprenticeship programmes for young people in the winter'} = $\lambda_\theta$\\
+
+\end{center}
+
+The subject \emph{`apprenticeship programmes for young people in the winter'} is a long phrase consisting of nested related subjects. So, to make processing and analysis easier, it is split further to show each of the related subjects and the function words linking them. Thus, the concept \emph{`apprenticeship programmes for young people in the winter'} is expressed as the sequence $\langle \lambda_{\theta1},F_2,\lambda_{\theta2},F_3,F_4,\lambda_{\theta3} \rangle$, where,
+\begin{center}
+
+\emph{`apprenticeship programmes'} = $\lambda_{\theta1}$\\
+\emph{`for'} = $F_2$\\
+\emph{`young people'} = $\lambda_{\theta2}$\\
+\emph{`in'} = $F_3$\\
+\emph{`the'} = $F_4$\\
+\emph{`winter'} = $\lambda_{\theta3}$
+
+\end{center}
+
+The full sentence \emph{``We will implement more apprenticeship programmes for young people in the winter''} can thus be expressed as the sequence
+$\langle START, F_1, \lambda_A, \lambda_S, \lambda_{\theta1}, F_2, \lambda_{\theta2}, F_3, F_4, \lambda_{\theta3}, STOP \rangle$. Following the above examples, a formal structure of VLSs emerges and it consists of a sequence of strings composed of one or more subject expressions drawn from a countably infinite vocabulary of subjects, one or more semantically relevant actions or states which are also drawn from a countably infinite vocabulary of actions and states and at least one function word drawn from a finite set of function words. We propose that the vocabulary of subjects is countably infinite because subjects could be about literally anything. Finally, all words and expressions drawn belong to a universal set of expressions.
+Thus, the generation of a VLS is defined by the following parameters:
+\begin{center}
+$\Sigma$ = A countably infinite set of Subjects, Actions, State, Function words and Value holder entity names and expressions (Vocabulary of vocabularies)\\
+$\lambda_\theta$ = A countably infinite set of subject\\
+$\lambda_S$ = A countably infinite set of States\\
+$\lambda_A$ = A countably infinite set of Actions\\
+$F$ = A finite set of function expressions and words\\
+$START$ = Marker representing the start of a sentence\\
+$STOP$ = Marker representing the end of a sentence\\
+Where, $(\lambda_\theta, \lambda_S, \lambda_A, F) \in \Sigma $ and $\{START, STOP\} \in \Sigma$
+\end{center}
+
+Following the derivation of the formal structure, how then does a value holder generate a sentence? 
+We elucidate this by considering the example of a machine programmed with pro open-source software values. Imagine that this machine needs to generate a VLS that responds adequately to a statement or question e.g., a statement that challenges the `benefit of open source software as compared to proprietary software' e.g. ``Should companies developing high precision software use proprietary software or open source software''. The goal of the machine is to satisfy three conditions -- 
+\begin{itemize}
+\item
+It must generate a response that is grammatically correct. 
+\item
+It must generate a sentence that fits the requisite value.
+\item
+It must generate a sentence with actions and states that are semantically relevant.
+
+\end{itemize} 
+\noindent Assume the machine has access to the sets $\lambda_\theta$, $\lambda_S$, $\lambda_A$, $F$, $\{START,STOP\}$. To generate the VLS, the machine could commence with the base subject expressions `proprietary software' and `open source software' drawn from the vocabulary $\lambda_\theta$. Since the resulting sentence is a sequence of words and expressions, and assuming the machine prefers the expression `open source software' to precede `proprietary software' in the resulting sequence, the goal of the machine is to generate a set of words to fill the empty slots as seen in figure~\ref{fig:one}.
+\begin{figure}
+  \includegraphics[width=\textwidth]{value_generation}
+  \caption{Illustration of Sentence generation by a machine and showing empty word slots}
+  \label{fig:one}
+\end{figure}
+
+We know already that slots containing actions and states must be filled with expressions that are in the same semantic field as the subjects. So, the machine generates each word in the sequence by picking semantically relevant words from each vocabulary in $\Sigma$ as seen in figure~\ref{fig:two}.
+\begin{figure}
+  \includegraphics[width=\textwidth]{sentence_generation}
+  \caption{Illustration of Sentence generation by a machine with filled word slots}
+  \label{fig:two}
+\end{figure}
+
+After the \emph{START} sign, the machine selects the words `it' and `is' from the vocabulary of function words. To convey the notion that open-source software is preferable to proprietary, it associates the expressions `cheaper' and `to implement', which are drawn from the state and action vocabulary. The functional expression `instead of' plays the role of a comparator, bridging the two subject expressions. Once the machine completes the sentence generation sequence it returns the \emph{`STOP'} sign to mark the end of the sentence. Thus, the final sentence sequence becomes:
+\begin{center} 
+$\langle$ \emph{START, It, is, cheaper, to implement, open-source software, instead of, proprietary software, STOP} $\rangle$.
+\end{center} 
+
+\noindent This sentence is grammatically correct and satisfies the values of the machine because the actions and states associated with the subjects are semantically and contextually relevant. However, it is possible for the sentence to be grammatically correct but have actions that fail to satisfy semantic correctness. For instance, an element in the set of actions could be the expressions `to marry', which when substituted for the action `to implement' forms a grammatically correct sentence that makes no sense semantically -- ``It is cheaper to marry open-source software instead of proprietary software''. This reemphasizes the importance of the semantic relationship between subjects, actions and states, and that each subject in the vocabulary can be mapped only to a subset of semantically relevant states and actions.
+In addition, the context and value holder further constrains the choice of action and state.
+
+
+Therefore, in generating each word for a sentence, the machine determines the likelihood of each word/event by considering several factors including the nature of the subjects, the grammatical structure of the sequence of events etc. Mathematically, we can say that each word event generated has certain probabilities associated with it, and the probability of each word or expression is consistent with the value, grammatical correctness and context. Following this illustration, the value model development is about developing a function capable of estimating these probabilities so that for any subject under any context and for a particular value holder, a sentence can be generated. In conclusion, the process of generating sentences from values is a generative process, where words as events are generated from a vocabulary, and the probability of each event occurring in the sequence is a function of the grammatical relationship between the events, the context, the level of semantic relevance between the events and the event generator that is the value holder. In the next section, we describe how the generation of VLS can be mathematically represented.
+
+\section{Representation of Value Models}
+Having shown that the generation of VLSs is a generative process, our goal is to learn a value model from all the VLSs made by a value holder (\emph{H}). This model must be able to estimate the probability of a sequence of words in a VLS. To accomplish this task, we assume that there exists a large corpus of VLSs made by \emph{H}, and that each sentence in the corpus represents a distribution of possible utterances that can be made by the value holder. The estimation of these distributions can be broken down into two related tasks.
+\begin{enumerate}
+\item
+Using the example of the generative machine mentioned earlier (figures~\ref{fig:one} and \ref{fig:two}), how can the machine correctly generate each word in the sequence so that it forms a correct sentence. 
+\item
+How do we estimate the probability of a sentence?
+\end{enumerate}
+Since each sentence in the corpus represents a sequence of random variables, $\langle W_1, W_2,W_3, \ldots ,W_n \rangle$   where each random variable can take any value in a vocabulary of possible words, the probability of any such sequence of random variables can be expressed as:
+\begin{equation}
+\label{eqn:01}
+P(W_1 = w_1,W_2= w_2,W_3= w_3,\ldots,W_n= w_n),
+\end{equation}
+where $n \geq 1$ and $w_i$ is an element of the vocabulary for $i = 1 \ldots n$. 
+\noindent Based on the chain rule of probabilities, equation~\ref{eqn:01} above can be expressed as,
+\begin{equation}
+\label{eqn:02}
+P(W_1=w_1)\prod_{i=2}^{n}P(W_i=w_i|W_1=w_1,\ldots,W_{i-1}=w_{i-1}
+\end{equation}
+\noindent Thus answering the second question. As for the first question, we can reformulate it as a word prediction task. Assume that our machine in figures~\ref{fig:one} and \ref{fig:two} was asked to generate a word to complete the sentence \textit{``We will reduce \_\_\_\_\_ ''}. Assuming the machine had the option of three words, \textit{`taxes'}, \textit{`fishes'} and \textit{`riches'}. The machine could reference the corpus of sentences to find how frequently the sentences \textit{``We will reduce taxes''}, \textit{``We will reduce fishes''} and \textit{``We will reduce riches''} occur. In other words, the machine makes an estimation of the likelihood of a word by looking at some reference history. This analogy can be represented mathematically as the conditional probability of a word given its history ($h$), that is $p(w|h)$.
+
+These estimations falls under a category of statistical models called Language Models (LMs). LMs belong to a class of models called generative models that have been applied to a wide variety of applications such as hand writing recognition (Russell and Norvig, 2002), spelling correction (Kukich, 1992), text prediction and machine translation. 
+
+In LMs, a simplifying assumption based on the Markov assumption which allows us estimate the probability of each event by conditioning only on words in its immediate past is applied to equation~\ref{eqn:02}. The result of this simplification means that equation~\ref{eqn:02} becomes: 
+\begin{equation}
+\label{eqn:03}
+P(W_1 \ldots w_n) \approx \prod_{i=1}^{n}p(w_i|w_{i-1}),
+\end{equation}
+Where, the probability is conditioned on the previous word (bigram LM), or
+\begin{equation}
+\label{eqn:04}
+P(W_1 \ldots w_n) \approx \prod_{i=1}^{n}p(w_i|w_{i-2},w_{i-1}),
+\end{equation}
+Where the probability is conditioned on the previous two words (trigram LM).
+
+
+Although the trigram language model has been shown to produce good model estimates, the above model does not fully capture all the properties of the VLS. For instance, the above model only captures local dependencies and does not incorporate the semantic aspects and contexts of each word. In addition, the relationship between the aspects (subject, action, state) of VLSs are not captured at all as each word is only dependent on a word or words seen only in a short window span (one or two words for the bigram and trigram case respectively). Consider the sentence sequence \textit{``UKIP will implement more apprenticeship programmes for young people in the winter''}, the action \textit{`will implement'} is related to the value holder \textit{`UKIP'} and the subjects \textit{`apprenticeship programmes'}, \textit{`young people'}. Both subjects \textit{`apprenticeship programmes'}, \textit{`young people'} are related subjects and share a semantic relationship demonstrated through the state word \textit{`more'}. These relationships are not captured by the trigram model. Other types of language models like skip N-gram  -- where the context skips over some words so that the probability estimate becomes $p(w_i|w_{i-1},w_{i-3})$ and variable length N-gram which support conditioning on additional contextual information might aid in addressing the problem of long distance dependencies and local context but fail to capture the semantic relationships between the value components of the sentence (Ney et al, 1994; Kneser, 1996). 
+
+To modify the LM for VLSs, the LM must capture the syntactic and semantic relationships between actions, states and subjects. It must also be tailored to the context and value holder. For now, we assume that the value holder ($H$) and context ($C$) are known entities. We can incorporate $H$ and $C$ into the model by also conditioning the probability of each word in addition to the history ($h$) on ($H$) and ($C$). The estimation equation becomes, 
+\begin{equation}
+\label{eqn:05}
+p(w_1 \ldots w_n) \approx \prod_{i=1}^{n}p(w_i|h, H, C),
+\end{equation}
+where $h$ is a history in the trigram $(w_{i-1},w_{i-2})$ 
+or bigram case $(w_{i-1})$ for a VLS made by a value holder $H$ under a context $C$. 
+Equation~\ref{eqn:05}, must also capture the relationships between the value components that make up the sentence i.e. the subject expressions ($\theta$), Action expressions ($A$), State expressions ($S$) and function words ($F$). Using the earlier example in Figure~\ref{fig:one} and \ref{fig:two}, for the machine to generate an action expression or state for the subject, it must generate expressions that are semantically relevant to the subject, in other words, it must select actions or states that are in the same semantic field as the subject. Since these words (actions, states, subjects) represent the main substance of the VLS, they have priority status as the most important events in the sequence. Therefore, we assume that for the VLS to make sense, each Action, State or subject occurring in the sentence is additionally dependent on any other $A$, $S$ and $\theta$, that is in direct semantic relationship with it. As for the function words, since their primary function is to connect priority expressions, they are estimated from their history alone. Thus, the value language model takes the form: 
+\begin{equation}
+\label{eqn:06}
+p(w_1 \ldots w_n) \approx \prod_{i=1}^{n}
+\left\{
+\begin{array}{ll}
+p(w_i|h,H,C) & if\; w_i\;  is\; a\; function\; word \ & p(w_i|h,H,C,A,S,\theta) & if\; w_i\;  is\; any\; of\; A,S,\theta    \end{array} 
+\right,
+\end{equation}
+
+
+Equation~\ref{eqn:06} captures a richer informational and semantic context and the net effect is a high order LM. In summary, unlike regular LMs, the probability of each word ($w$) in the VLS is $p(w_i|h,H,C,A,S,\theta)$  if $w \in (A,S,\theta)$ or $p(w_i|h,H,C)$ if $w \in F$. In the next section, we describe how the value model is applied in estimating recipient sentiment.
+
+\section{Applying Value Model to Sentiment Prediction}
+To apply the value model towards predicting the sentiment of a recipient, we assume that the utterance for which we intend to predict the recipient's sentiment satisfies the formal structure of VLSs.
+We know from value theory that for the utterance to evoke either negative or positive sentiment, the state or action on the sentence's subject must be in line with the recipient's preferred state or action or vice versa. Assuming we identify the states or actions in the sentence, the sentiment of the recipient can be manually determined by comparing the states and actions in the utterance against previous statements or utterance made by the recipient i.e. compare the expressed state or action against a history of the recipient's utterance (This is synonymous to a language model). In this regard, we are also asking `what is the likelihood of the recipient generating an utterance with the states or actions expressed in the utterance?'. Therefore, assuming all utterances are based on people's values, the behaviour of the recipient to a new utterance ($w_1$) can be predicted as a measure of how likely it is for the recipient to make the utterance $p(w_1)$. 
+
+However, this estimate does not tell us anything about the sentiment of the recipient i.e. if the utterance is positive or negative. To accomplish some sort of measurable reference for the estimate, we introduce a second assumption. Since we know the state ($S_1$) and action ($A_1$) of the subject ($\theta$) in $w_1$ and we have a universal set of expressions $\Sigma$, and a value model of the recipient, we can generate a second utterance $w_2$ such that the action ($A_2$) or state ($S_2$) is completely opposite in sentiment to the state or action in the original sentence $w_1$. This state/action of the new sentence must be drawn from a finite subset of $\Sigma$, $\Sigma'$ containing semantically relevant state/actions associated with the subject ($\theta$) and the newly generated sentence must also be syntactically correct. By expressing contrary action or states we attempt to generate a syntactically correct and relevant sentence that connotes sentiments opposite to the original sentence $w_1$. To this new sentence $w_2$, we can estimate the likelihood of it being made by the via the value language model. This process results in two probability estimates ($p(w_1),p(w_2)$) where utterances $w_1$ and $w_2$ portray opposite sentiments. 
+
+
+Therefore, if $p(w_1)> p(w_2)$, then we can infer that the recipient is more likely to make the statement $w_1$ and so, it means he is more likely to prefer the state and actions expressed in $w_1$ which will most likely result in positive behaviour or sentiment. Conversely, if $p(w_1) < p(w_2)$, the recipient is less likely to make the statement $w_1$ and we conclude that his sentiment is likely to be negative, because he is less likely to utter the original statement and more likely to utter or make the new sentence $w_2$, with the opposite sentiment. In other words, the recipient is more likely to prefer the state or action expressed in the new sentence $w_2$. 
+
+
+Based on this, the sentiment ($\Psi$) is a measure of the difference between the probability estimate of the actual utterance ($w_1$) and the probability estimate of a new utterance ($w_2$) depicting a state or action that is opposite in sentiment to the initial utterance.
+Another key aspect of this approach to recipient sentiment prediction is the ability to detect the intensity of the sentiment as a measure of the difference between $p(w_1)$ and $p(w_2)$. The margin of the difference between the probability likelihoods can allow us infer sentiment orientations like extremely negative, negative, positive, extremely positive. Algorithm~\ref{alg:one} provides a stepwise guide to predicting the sentiment of an utterance. In the next section, we describe an implementation based on the values of UK political parties.
+
+\begin{algorithm}[t]
+\SetAlgoNoLine
+\KwIn{Utterance $w_1$, value model $V$ of a recipient $H$}
+\KwOut{Sentiment prediction $\Psi$}
+\For{$w_1$}{
+Identify subject $\theta$ of $w_1$\\
+Identify action $A_{w1}$ of $w_1$\\
+Identify state $S_{w1}$ of $w_1$\\
+Generate $w_2$\\
+Estimate $p(w_1)$\\
+Estimate $p(w_2)$\\
+}
+\If{$p(w_1)>p(w_2)$}
+{$\Psi$ = $positive$ for $w_1$}
+\eIf{$p(w_1)<p(w_2)$}
+{$\Psi$ = $negative$ for $w_1$}
+
+
+\caption{Steps for Estimating Recipient Sentiment Orientation of an Utterance}
+\label{alg:one}
+\end{algorithm}
+
+\section{Implementation}\label{sec:implementation}
+In implementing the value model, a corpus of spoken or written content is required as the source of values. The domain of interest is politics, and data is sourced from speeches, policy manifestos and debates in compiling training and test corpus. Specifically, the implementation focuses on two timely topics in UK politics and they are `Immigration' and the `European Union (EU)'. Our goal is to build a model of values for these two subjects such that the model is representative of three major UK political parties (value holders). Afterwards, we apply these models towards predicting the sentiment of the value holders on sentences. The political parties are The Conservative party, Labour party and Liberal Democrats (LD). 
+
+
+For the sake of this implementation, the VC, context (C) which is ambiguous and able to take an innumerable number of forms (Henricksen et al, 2002) is the subjects `EU' and `Immigration'. We can view these domain subjects or contexts as conditions or scenarios. For example, the United Kingdom Independence Party (UKIP) manifesto, suggests that in the context of the EU, they are opposed to unlimited relationship and uncontrolled migration with and from the EU but open to migration and more relationship with the Commonwealth. Whereas, in the context of Immigration, they advocate limited migration into the UK from anywhere (Europe and outside Europe). So, in one topical subject context, they support migration and in another they are opposed to it.
+
+
+Although the implementation focuses on value holders from the three parties mentioned, we also downloaded documents associated with UKIP. This UKIP corpus is used in evaluating the model of the three parties. The idea behind this evaluation is that UKIP views on the EU and Immigration are very well established and not as unclear as the three main parties and as such we should be able to compare similarities in the value orientation and sentiment of each of the three political parties in relation to UKIP policies and sentiment. Finally, for this implementation, we introduce an expression `context-party' pair, which refers to the corpus of training data for a party or value holder under a context. For example, the expression `EU-Labour' pair refers to data by a Labour value holder under the EU context. 
+
+Therefore, implementation data consists of two categories. The first category consists of relevant policy documents, manifestos and reports related to the two subjects (Immigration and EU). The second was drawn entirely from Parliamentary debate transcripts - Hansard - covering the periods between 2010 and 2015. 
+
+\subsection{Data Preparation}
+Data collected for the four political party is grouped by the subject. For each context-party pair, e.g `EU-Labour', `Immigration-Labour', the data was prepared. The first part of data preparation is Content renaming. It is not uncommon for relevant VCs observed in training to be non-existent or have a low count in the test set. To account for such low frequency or uncommon VCs, the objective of content renaming is to identify rare or unseen semantically relevant lexical units and rename them by mapping them to a pseudo-word. The renamed linguistic units identified in the corpus include:
+\begin{itemize}
+\item
+Names -- This includes the names of persons. In the political corpus, person names are quite prevalent. People are identified via their titles e.g. `The Honourable MP', pronouns e.g `he', or by their names, e.g. `Theresa May'. Using a compiled gazetteer and ontology of all UK MP names as well as a named entity transducer, all identified names are mapped to the pseudo-word `PERSONNAME'. Similarly, abbreviations e.g. `NATO' and `TTIP', Locations e.g. `Manchester' and alphanumeric named entities which are commonly products or even places e.g. `A40' are respectively mapped to the pseudo-words `LOCATIONNAME', `ABBREVIATIONNAME' and `ALPHANUMERICNAME'. 
+\item
+Dates, Numbers and Currency -- All date expressions are assigned the pseudo-word `FIGUREDATE'. These include expressions such as `20th century', `12th of August', `July', `12-11-2001'. As for numbers and currencies, this category includes numbers expressed either as words or Arabic numerals. Since numeric elements can range from $-\infty$ to$+\infty$, we assign a single generic pseudo-word for all numbers, currencies and percentages that are less than 0 to be `FIGURENEGATIVENUMBER' for numeric expressions, `FIGURENEGATIVEPERCENT' for percentages and `FIGURENEGATIVEMONEY' for currencies. For numeric expressions, greater than 0 we use a naming convention that combines the expression `FIGURE' followed by the number of digits expressed in words and the category `PERCENT', `MONEY' or `NUMBER'.
+\end{itemize}
+
+Since the unit of analysis is a sentence, each document is converted corpus to a corpus of sentences so that Our training and test set  will be made up of a collection of sentences. Table~\ref{tab:two} shows the original number of documents prior to pre-processing while table~\ref{tab:three} shows the total number of sentences in the corpus associated with each party and domain after data preparation. Table~\ref{tab:four} portrays the total number of tokens (\emph{N}) in each training corpus. The comparative difference in corpus and token size between Conservative/Labour and the Liberal Democrats is accounted for by the comparative size of the parties and the number of MPs. Since Labour and Conservative party have more MPs, it is expected that they would make more contributions, thus a larger data set.
+
+% Table
+\begin{table}%
+\caption{Documents Extracted for Parties}
+\label{tab:two}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{lllll}
+  \toprule
+  YEAR   &  Conservative & Labour & LD & UKIP\\
+  \toprule
+  2010     & 25556 & 37108 & 1001 & 0 \\
+  2011	& 28003	& 19011	& 3103	& 0 \\
+2012	& 30965	& 17882	& 2782	& 0 \\
+2013	& 32517	& 18429	& 2840	& 0 \\
+2014	& 30151	& 16407	& 2298	& 0 \\
+2015	& 29532	& 14182	& 1048	& 22 \\
+Total	& 176724	& 123019 &	13072 &	22 \\
+
+  \bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+
+% Table
+\begin{table}%
+\caption{Number of sentences post-data preparation}
+\label{tab:three}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{lllllll}
+  \toprule
+  Data	 &  Cons EU & Cons Immig & Lab EU & Lab Immig & LD EU & LD Immig\\
+  \toprule
+Train	& 238135	& 194838	& 165769	& 135628	& 20132	& 16470 \\
+Test	& 85050	& 69585	& 59203	& 48439	& 7190	& 5883 \\
+
+
+  \bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+
+% Table
+\begin{table}%
+\caption{Total Number of Tokens across training corpus}
+\label{tab:four}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  Party	 &  EU & Immigration \\
+  \toprule
+Conservative	& 2974827	& 2488436	 \\
+Labour	& 385171 &	2577704 \\
+
+LD	& 2355246	& 356076 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+\subsection{VC Identification Implementation}
+Having collected the corpus of sentences, we commence with the identification of VCs. The value holders $H$ are known, as the author of each sentence or document was mapped to his/her party. As such $H$ are collectively viewed as the parties themselves. The contexts $C$ was described earlier to be the subjects of interest i.e. `Immigration' and `EU', which leaves the action $A$, state $S$ and subject $\theta$. 
+
+
+A n{\"a}ive approach to identifying content and function words would have entailed identifying all function words in the corpus so that the remainder would be content words. Conversely, we could identify all content words i.e. NPs, Nouns, verbs, adjectives and adverbs in the corpus so that what we are left with are the function words. However, simply identifying these elements was not informative enough for the model implementation since it did not reflect the relationship or dependency between any of the linguistic units nor portray the primacy of the content words either as independent units or when compared to other units.
+
+
+To accomplish the task of content and function word identification, we apply English language parsers based on the Dependency Grammar (DG) formalism (Tesniere, 1959; Nivre, 2005). DG formalism stems from the work of the French linguist Lucien Tesniere (1959) and it is a formalism that provides theoretical approaches for formalizing sentence structure. The central tenet behind DG is that linguistic units in a sentence are connected to each other by asymmetric binary relationships and consequently there exists a type of dependence between them. Our justification for applying DG are as follows:
+\begin{enumerate}
+\item
+DG reflects the core subject of the sentence -- VLSs express the intents of a person. Although these intents are expressed as a sequence of words at the communicative level, humans (the speaker and recipient) can cognitively deduce and summarize the substance of the intent into one or two expressions. Consider the sentence \textit{``The Government will ban head scarves''}. The central intent of this sentence describes an action – \textit{`will ban'}. All the adjourning linguistic units, though necessary for sense making cannot exist without the main intent of the sentence expressed as \textit{`will ban'}. Thus, the verb \textit{`ban'} is linguistically the most important unit in the expression as it semantically represents the act or process that is expressed by the grammatical subject or object. Consequently, we can infer that the intent of the speaker or his primary thought which is an expression of his values is encapsulated in the expression \textit{`will ban'}. 
+DG formalism captures the primary thoughts of a sentence as a concept called Head Word. Head word refers to the highest-level word in a sentence (usually a verb ) for which all other words depend on (Manjali, 1994; De Marneffe et al, 2008). Such a word semantically represents the process or act that is expressed by the grammatical subject or grammatical object in the sentence. Therefore, with a dependency parser, we should be able to identify the central thought of any value laden sentence or head word. Another justification for using DG formalism that extends beyond identifying the core subject of a sentence is that it also aids in identifying other secondary relations and units which make up the sentence. With DG formalisms, we can identify the agents (grammatical subject), patients (grammatical object) and themes (predicate) operational in the sentence (These are value components).  By identifying these elements, we can map the central core/intent of a sentence to its grammatical subject and grammatical object  thus enabling us identify the number of arguments associated with the head word.
+\item
+Captures Linguistic Priority -- We apply DG formalism because it expresses linguistic priority which is the notion that one linguistic unit is superior to another. DG formalism reflects this notion of priority in that the asymmetric relationship between linguistic units link a superior term or governor to an inferior term called the dependent (Kubler et al, 2009; Aydin & Torusdag, 2008). Based on this notion of priority, DG formalisms can enable us hierarchically rank the class of content words in a sentence where the primary word is the head-word verb, followed by its actants which are usually nouns. Next in line in this hierarchy are the modifiers of the nouns which are typically adverbs and adjectives as illustrated in figure~\ref{fig:three}.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{HeirachyOfWords}
+  \caption{Illustration of Word Class Priority Hierarchy}
+  \label{fig:three}
+\end{figure}
+
+\item
+Captures relationships between Linguistic Units -- A key aspect of the value model is that it must capture the relationship between the linguistic units in the VLS. DG formalisms reflect dependency relationships between lexical units. These relationships could be morphological, syntactic or semantic (Polguere and Mel’ cuk, 2009). Semantic roles are difficult to categorize and determine, requiring significant human input (de Marneffe et al, 2014) as such we make use of syntactic roles for which there exist considerable literature and implementations. In addition, dependency structure is not defined by word order which means that we can identify the relationships that exist between content words regardless of their order or proximity to one another. 
+\end{enumerate}
+
+In summary, DG presents a reasonable theoretical formalism for identifying not just content words (value components) and function words but also identifying the relationships between words and the priority of each linguistic expression. In this paper, we make use of Stanford Universal Dependencies implementation (SUD) (de Marneffe et al, 2014a; de Marneffe et al, 2014ab). We use SUD specifically for its popularity and accessibility but most importantly because of its broad universal taxonomy of relations. 
+
+
+SUD consists of 42 relations centred around core arguments -- These are the dependency relations that the sentence predicate partakes in -- and non-core arguments -- which generally covers the dependency relations of modifiers, nouns and function words. SUD clearly delineates core dependency relations - which are relations between the verb e.g. the root verb and subjects, objects or clausal complements in the sentence -- and other dependency relations such as modifiers. Using the word class priority illustration in figure~\ref{fig:three}, the relations used in this research include all 8 core dependency relations (based on figure~\ref{fig:three}, the relations between the headword and verbs in the sentence and the actants). These relations are listed in table~\ref{tab:five}.  A second category of relations used are oblique relations or modifiers which relate the actants and modifying expressions as seen in figure~\ref{fig:three}. SUD's 8 non-core and modifying relations are used and outlined in table~\ref{tab:six}. The final category of SUD relations used captures the relations which exist between content words and function words. They include expressions of coordination and multiword expressions. Although this third category of relations are important they are less regular and their occurrence can be dependent on the type of document or language. Therefore, 14 relevant content-function word relations are used and outlined in table~\ref{tab:seven}. SUD also includes a relation called `root' which reflects the root of the sentence. The governor of this relation is a fake node `ROOT' which marks the start of the dependency tree and its dependent is the root word.
+
+
+% Table
+\begin{table}%
+\caption{Core Dependency Relations (Source: SUD v1.0)}
+\label{tab:five}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{ll}
+  \toprule
+Dependency Relation &	Full Meaning \\
+  \toprule
+nsubj	& Nominal subject \\
+csubj	& Clausal subject \\
+nsubjpass	& Passive nominal subject \\
+cubjpass	& Passive clausal subject \\
+dobj	& Direct object of a predicate \\
+ccomp	& Clausal complement of a verb or adjective \\
+xcomp	& Clausal complement of a verb \\
+iobj	& Indirect object of a verb \\
+  \bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+% Table
+\begin{table}%
+\caption{Modifier Relations of Nouns and Clausal Predicates (Source: SUD v1.0)}
+\label{tab:six}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{ll}
+  \toprule
+Dependency Relation &	Full Meaning \\
+  \toprule
+nmod	& Nominal modifier \\
+advcl	& Adverbial clause modifier \\
+advmod	& Adverbial modifier \\
+neg	& Negation \\
+acl	& Adjectival clause modifier of a nominal \\
+amod	& Adjectival modifier \\
+appos	& Appositional modifier of a noun \\
+nummod	&  Numeric modifier of a noun \\
+\bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+ 
+ 
+% Table
+\begin{table}%
+\caption{Content-Function Word Relations (Source: SUD v1.0)}
+\label{tab:seven}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{ll} 
+\toprule
+Dependency Relation &	Full Meaning \\
+  \toprule
+  
+det	& Determiner relation between a nominal and a determiner \\
+mwe	& Relates multiword expressions \\
+goeswith	& Links two parts of a word separated in text that is not well edited \\
+name	& Used to relate names e.g. \textit{name(Cameron,David)} \\
+foreign	& Used to label sequence of foreign words \\
+list	& Used to relate chains of comparative items \\
+aux	& Relates an auxiliary of a clause \\
+auxpass	& Relates passive auxiliary of a clause \\
+mark	& Relates a marker \\
+cop	& Captures complement of a copular verb and the copular verb `to be' \\
+cc	& Relates an element to a coordinating conjunction \\
+conf	& Relates two elements connected by a coordinating conjunction \\
+case	& Used for any case-marking element, treated as a separate syntactic word  \\
+compound	& Relates compound expressions e.g. \textit{compound(warrant,arrest)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+
+The SUD parser is applied on each sentence in the training corpus. We base the extraction of content and function words on the following axioms:
+
+\begin{enumerate}
+\item
+Function words are words which do not partake in modifying relations or core dependency relations. Typically, these words do not have any dependents of their own and are normally dependents of content words. The class of relations between function words and content words consists of the relations in table~\ref{tab:seven}. Therefore, in a sentence, a function word ($x$) is a word that belongs to the class of words in table~\ref{tab:one} and is a dependent in a relation ($R$) where $R$ belongs to one of the relations in table~\ref{tab:seven}. In this research, the exception to this is negation relation and negation words, which are viewed as content words.
+\item
+Since SUD provides dependency labels that differentiate compound expressions from modifications, we formulate the unit of content words as singular lexical units and not expressions. For example, the expression \textit{`EU Commission'} which is ideally a single value object expression is split into two content words \textit{`EU'} and \textit{`commission'} so that when parsed we obtain the relation \textit{compound(Commission,EU)}. Thus, in a sentence, a content word ($x$) is a singular word.
+\item
+Based on SUD literature, core dependency relations and modifying relations (table~\ref{tab:five} and \ref{tab:six}) exist only between content words. Therefore, in a sentence, a word $x$ is a content word if it is in a relationship $R$ with another word $y$ such that the relation $R$ is a core or modifying relationship. We can also infer that $y$ is also a content word since only content words can partake in core or modifying relations of table~\ref{tab:five} and \ref{tab:six}. 
+\item
+If two words $x$ and $y$ are linked by a coordinating conjunction e.g. \textit{`and'}, \textit{`or'}, \textit{`but'}, then both $x$ and $y$ must belong to the same class (content or function word). Therefore, if in a compound relation, a known content word ($x$) is related to a word ($y$), then ($y$) is also a content word. Similarly, if a known function word ($x$) is related to a word ($y$) through a compound relationship, then ($y$) is also a function word. 
+
+\end{enumerate}
+
+With these axioms as a foundation, training sentences are parsed and a set of content words are extracted. Table~\ref{tab:eight} shows the list of content words extracted across contexts and parties.
+
+% Table
+\begin{table}%
+\caption{Vocabulary Size of Content Words across all Parties and Contexts}
+\label{tab:eight}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{lll} 
+\toprule
+Party &	EU & Immigration \\
+  \toprule
+  
+
+Conservative	& 35756	& 32925 \\
+Labour	& 31077	& 28582 \\
+Liberal Democrats	& 15629	& 14684 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+
+\subsection{Value Language Model Implementation}
+The objective of this section is to implement a language model for the entire vocabulary of words in the training set based on equation~\ref{eqn:06}. For each each context-party pair, we implement a separate LM, to represent the values of the party on the context. Since context and function word probabilities are estimated differently as seen in \ref{eqn:06}, for each context-party pair, we implement two separate LMs, LM1 and LM2, where LM1 estimates the probability of a function word and LM2 estimates the probability of a content word.
+
+\subsubsection{Function Word LM Implementation}
+LM1 is implemented as an interpolated Kneser-Neys trigram model (Jurafsky and Martin, 2009; Ney & Essen, 1991; Ney et al, 1994). Other language models were applied on our training set and the interpolated KN model had the best performance. Table~\ref{tab:nine}, shows the perplexity of models applied on our `Conservative-EU' training set, with the interpolated KN model achieving the least perplexity. In this work, we make the open vocabulary assumption which means that we want our model to account for unseen words or out of vocabulary words. The reasoning behind this is because new words (formal of colloquial) and expressions are constantly being added to the English vocabulary.
+
+An important feature of the LM is cutoffs, which is ``The count below which the ngrams are discarded is called cutoffs'' (Clarkson and Rosenfeld, 1997, p. 1). Cutoffs restrict the size of the LM by cutting off or ignoring infrequent ngrams.  However, they have also been shown to slightly reduce the performance of the model (Chen and Goodman, 1998; Clarkson and Rosenfeld, 1997). Therefore, cutoffs are not applied in this implementation. In the next section, we describe the content word estimation.
+
+
+% Table
+\begin{table}%
+\caption{Model Perplexity for Conservative-EU}
+\label{tab:nine}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{ll} 
+\toprule
+Model & Perplexity \\
+  \toprule
+  
+
+Good-Turing	& 137.81 \\
+Linear	& 158.91 \\
+Witten-Bell	& 134.73 \\
+Absolute	& 136.67 \\
+Kneser-Neys (Back-off)	& 133.68 \\
+Kneser-Neys - Interpolated	& 118.63 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+
+\end{minipage}
+\end{table}%
+
+
+\subsubsection{Content Word LM Implementation}
+Although the interpolated KN model implemented in the previous section can estimate the probability of content words, our value model proposes that such an estimation fails to encapsulate the necessary parameters that make up the value. This is because the KN model restricts itself to a very small history, does not reflect the relationship between the content words in the sentence nor the additional semantic properties that reflect the purpose of the content word. 
+
+
+To elucidate, let us consider the sentence \textit{``We will not accept the actions of the EU''}.
+For this sentence, LM1 would estimate the probability of the content word \textit{`EU'} from the bigram \textit{`of the'} i.e. $p(EU|of,the)$. However, our value model suggests that while the trigram probability is a valid feature in estimating the likelihood of \textit{`EU'}, it is not alone sufficient. For the model to truly be a values model, it must reflect the fact that there is an association between the content word \textit{`EU'} and the other content words \textit{`accept'} and \textit{`doing'}. Such relationship includes the fact that the nominal head \textit{`the EU'} modifies the phrase \textit{`the actions} giving the estimate $p(EU|EU\; nominal\; modifier \;of \;accept)$. In addition, as a value model it must also reflect the positioning of each content word, for instance, \textit{`accept'} and \textit{`actions'} precede the word \textit{`EU} in the sentence. The VM must also reflect the nature of the content word capturing some of its syntactic and semantic features like its part of speech (POS) e.g. is it a noun $p(EU|noun)$, is it capitalized $p(EU|EU\; is\; capitalized)$, is it the root of the sentence $p(EU|root)$, is it connected to a negation $p(EU|EU\; is\; connected\; to\; a\; negation)$. Thus, we compute $p(EU)$ to be a product of a set of conditional probabilities which incorporate the relationship between the word $`EU'$ and other content words, the syntactic and grammatical positioning of the word, its history and finally its relationship to sentiment bearing words. These conditional probabilities are calculated by taking the product of the conditional probabilities mentioned above. 
+We observe then that the histories or conditions required in estimating content word probabilities is quite extensive. That is, by capturing such conditional estimates, we garner properties that reflect the expressed value. However, incorporating all these features in the interpolated LM results in a formulation that becomes very unwieldy  and unsuitable. To resolve this problem, we adopt log linear models, specifically maximum entropy models(Berger et al, 1996; Della Pietra et al, 1997; Ratnaparkhi, 1996) as they are renowned for their flexibility, robustness and ability to incorporate large feature sets (Audhkhasi et al, 2012). 
+
+
+\begin{definition}A maxent model for the estimation of content words consists of the following components:
+\begin{itemize}
+\item
+A set $X$ of observed input features i.e. $X = \{x_1, \ldots ,x_N\}$ where $N > 1$. 
+\item
+A finite set $C$ of content words $C = \{c_1, \ldots ,c_n\}$ where $n$ is the size of the content word vocabulary.
+\item
+A positive integer $N$ specifying the number of input features in the model.
+\item
+An indicator function $ f: X \times C \rightarrow \textbf{R}^{N}$ which maps any $(x,c)$ pair to a feature vector $f(x,c)$. Each indicator function takes any $(x,c)$ pair and maps it to a real value, either $0$ or $1$, such that $f(x,c)\in \{0,1\}$. These features are concatenated to produce a feature vector.
+\end{itemize}
+
+\end{definition}
+Thus, for any $x \in X$, $c \in C$, the model estimates a conditional probability,
+
+\begin{equation}
+\label{eqn:07}
+p(c|x)=\frac{exp(\sum_{i=1}^{N}w_{ci}f_i(c,x))}{\sum_{c' \in C}exp(\sum_{i=1}^{N}w_{c'i}f_i(c',x))}
+\end{equation}
+Where,  $f_i(c,x)$ is the indicator function for the $i^{th}$ feature of a class $c$ for a given observation $x$. $w_{ci}$ is the weight associated with the $i^{th}$ feature of class $c$. Given the maxent equation, the implementation task now involves: the selection of features, learning feature weights and finally computing content word probability estimations using equation~\ref{eqn:07}. 
+
+
+
+
+\begin{comment}
+We propose a suboptimal distribution to be used by each node, which is
+easy to compute and does not depend on the number of competing
+nodes. A natural candidate is an increasing geometric sequence, in
+which
+% Numbered Equation
+\begin{equation}
+\label{eqn:01}
+P(t)=\frac{b^{\frac{t+1}{T+1}}-b^{\frac{t}{T+1}}}{b-1},
+\end{equation}
+where $t=0,{\ldots}\,,T$, and $b$ is a number greater than $1$.
+
+In our algorithm, we use the suboptimal approach for simplicity and
+generality. We need to make the distribution of the selected back-off
+time slice at each node conform to what is shown in
+Equation~\eqref{eqn:01}. It is implemented as follows: First, a random
+variable $\alpha$ with a uniform distribution within the interval $(0,
+1)$ is generated on each node, then time slice $i$ is selected
+according to the following equation:
+% Unnumbered Equation
+\[
+i=\lfloor(T+1)\log_b[\alpha(b-1)+1]\rfloor.
+\]
+It can be easily proven that the distribution of $i$ conforms to Equation
+(\ref{eqn:01}).
+
+So protocols \cite{Bahl-02, Culler-01,Zhou-06,Adya-01,
+Tzamaloukas-01, Akyildiz-01} that use RTS/CTS
+controls\footnote{RTS/CTS controls are required to be implemented by
+802.11-compliant devices. They can be used as an optional mechanism
+to avoid Hidden Terminal Problems in the 802.11 standard and
+protocols based on those similar to \cite{Akyildiz-01} and
+\cite{Adya-01}.} for frequency negotiation and reservation are not
+suitable for WSN applications, even though they exhibit good
+performance in general wireless ad hoc
+networks.
+
+
+ 
+% Head 3
+\subsubsection{Exclusive Frequency Assignment}
+
+
+In exclusive frequency assignment, nodes first exchange their IDs
+among two communication hops so that each node knows its two-hop
+neighbors' IDs. In the second broadcast, each node beacons all
+neighbors' IDs it has collected during the first broadcast period.
+
+% Head 4
+\paragraph{Eavesdropping}
+
+Even though the even selection scheme leads to even sharing of
+available frequencies among any two-hop neighborhood, it involves a
+number of two-hop broadcasts. To reduce the communication cost, we
+propose a lightweight eavesdropping scheme.
+
+\subsection{Basic Notations}
+
+As Algorithm~\ref{alg:one} states, for each frequency
+number, each node calculates a random number (${\textit{Rnd}}_{\alpha}$) for
+itself and a random number (${\textit{Rnd}}_{\beta}$) for each of its two-hop
+neighbors with the same pseudorandom number generator.
+
+% Algorithm
+\begin{algorithm}[t]
+\SetAlgoNoLine
+\KwIn{Node $\alpha$'s ID ($ID_{\alpha}$), and node $\alpha$'s
+neighbors' IDs within two communication hops.}
+\KwOut{The frequency number ($FreNum_{\alpha}$) node $\alpha$ gets assigned.}
+$index$ = 0; $FreNum_{\alpha}$ = -1\;
+\Repeat{$FreNum_{\alpha} > -1$}{
+        $Rnd_{\alpha}$ = Random($ID_{\alpha}$, $index$)\;
+        $Found$ = $TRUE$\;
+        \For{each node $\beta$ in $\alpha$'s two communication hops
+    }{
+      $Rnd_{\beta}$ = Random($ID_{\beta}$, $index$)\;
+      \If{($Rnd_{\alpha} < Rnd_{\beta}$) \text{or} ($Rnd_{\alpha}$ ==
+          $Rnd_{\beta}$ \text{and} $ID_{\alpha} < ID_{\beta}$)\;
+      }{
+        $Found$ = $FALSE$; break\;
+      }
+        }
+     \eIf{$Found$}{
+           $FreNum_{\alpha}$ = $index$\;
+         }{
+           $index$ ++\;
+     }
+      }
+\caption{Frequency Number Computation}
+\label{alg:one}
+\end{algorithm}
+
+
+Bus masters are divided into two disjoint sets, $\mathcal{M}_{RT}$
+and $\mathcal{M}_{NRT}$.
+% description
+\begin{description}
+\item[RT Masters]
+$\mathcal{M}_{RT}=\{ \vec{m}_{1},\dots,\vec{m}_{n}\}$ denotes the
+$n$ RT masters issuing real-time constrained requests. To model the
+current request issued by an $\vec{m}_{i}$ in $\mathcal{M}_{RT}$,
+three parameters---the recurrence time $(r_i)$, the service cycle
+$(c_i)$, and the relative deadline $(d_i)$---are used, with their
+relationships.
+\item[NRT Masters]
+$\mathcal{M}_{NRT}=\{ \vec{m}_{n+1},\dots,\vec{m}_{n+m}\}$ is a set
+of $m$ masters issuing nonreal-time constrained requests. In our
+model, each $\vec{m}_{j}$ in $\mathcal{M}_{NRT}$ needs only one
+parameter, the service cycle, to model the current request it
+issues.
+\end{description}
+
+Here, a question may arise, since each node has a global ID. Why
+don't we just map nodes' IDs within two hops into a group of
+frequency numbers and assign those numbers to all nodes within two
+hops?
+
+\section{Simulator}
+\label{sec:sim}
+
+If the model checker requests successors of a state which are not
+created yet, the state space uses the simulator to create the
+successors on-the-fly. To create successor states the simulator
+conducts the following steps.
+% enumerate
+\begin{enumerate}
+\item Load state into microcontroller model.
+\item Determine assignments needed for resolving nondeterminism.
+\item For each assignment.
+      \begin{enumerate}
+      \item either call interrupt handler or simulate effect of next instruction, or
+      \item evaluate truth values of atomic propositions.
+      \end{enumerate}
+\item Return resulting states.
+\end{enumerate}
+Figure~\ref{fig:one} shows a typical microcontroller C program that
+controls an automotive power window lift. The program is one of the
+programs used in the case study described in Section~\ref{sec:sim}.
+At first sight, the programs looks like an ANSI~C program. It
+contains function calls, assignments, if clauses, and while loops.
+% Figure
+\begin{figure}
+  \includegraphics{mouse}
+  \caption{Code before preprocessing.}
+  \label{fig:one}
+\end{figure}
+
+\subsection{Problem Formulation}
+
+The objective of variable coalescence-based offset assignment is to find
+both the coalescence scheme and the MWPC on the coalesced graph. We start
+with a few definitions and lemmas for variable coalescence.
+
+% Enunciations
+\begin{definition}[Coalesced Node (C-Node)]A C-node is a set of
+live ranges (webs) in the AG or IG that are coalesced. Nodes within the same
+C-node cannot interfere with each other on the IG. Before any coalescing is
+done, each live range is a C-node by itself.
+\end{definition}
+
+\begin{definition}[C-AG (Coalesced Access Graph)]The C-AG is the access
+graph after node coalescence, which is composed of all C-nodes and C-edges.
+\end{definition}
+
+\begin{lemma}
+The C-MWPC problem is NP-complete.
+\end{lemma}
+\begin{proof} C-MWPC can be easily reduced to the MWPC problem assuming a
+coalescence graph without any edge or a fully connected interference graph.
+Therefore, each C-node is an uncoalesced live range after value separation
+and C-PC is equivalent to PC. A fully connected interference graph is made
+possible when all live ranges interfere with each other. Thus, the C-MWPC
+problem is NP-complete.
+\end{proof}
+
+\begin{lemma}[Lemma Subhead]The solution to the C-MWPC problem is no
+worse than the solution to the MWPC.
+\end{lemma}
+\begin{proof}
+Simply, any solution to the MWPC is also a solution to the
+C-MWPC. But some solutions to C-MWPC may not apply to the MWPC (if any
+coalescing were made).
+\end{proof}
+
+\section{Performance Evaluation}
+
+During all the experiments, the Geographic Forwarding (GF) by Akuilidz
+et al.~\shortcite{Akyildiz-01} routing protocol is used. GF exploits
+geographic information of nodes and conducts local data-forwarding to
+achieve end-to-end routing. Our simulation is configured according to
+the settings in Table~\ref{tab:one}. Each run lasts for 2 minutes and
+repeated 100 times. For each data value we present in the results, we
+also give its 90\% confidence interval.
+
+% Table
+\begin{table}%
+\caption{Simulation Configuration}
+\label{tab:one}
+\begin{minipage}{\columnwidth}
+\begin{center}
+\begin{tabular}{ll}
+  \toprule
+  TERRAIN\footnote{This is a table footnote. This is a
+    table footnote. This is a table footnote.}   & (200m$\times$200m) Square\\
+  Node Number     & 289\\
+  Node Placement  & Uniform\\
+  Application     & Many-to-Many/Gossip CBR Streams\\
+  Payload Size    & 32 bytes\\
+  Routing Layer   & GF\\
+  MAC Layer       & CSMA/MMSN\\
+  Radio Layer     & RADIO-ACCNOISE\\
+  Radio Bandwidth & 250Kbps\\
+  Radio Range     & 20m--45m\\
+  \bottomrule
+\end{tabular}
+\end{center}
+\bigskip\centering
+\footnotesize\emph{Source:} This is a table
+ sourcenote. This is a table sourcenote. This is a table
+ sourcenote.
+
+ \emph{Note:} This is a table footnote.
+\end{minipage}
+\end{table}%
+
+
+\section{Conclusions}
+
+In this article, we develop the first multifrequency MAC protocol for
+WSN applications in which each device adopts a
+single radio transceiver. The different MAC design requirements for
+WSNs and general wireless ad-hoc networks are
+compared, and a complete WSN multifrequency MAC design (MMSN) is
+put forth. During the MMSN design, we analyze and evaluate different
+choices for frequency assignments and also discuss the nonuniform
+back-off algorithms for the slotted media access design.
+
+% Start of "Sample References" section
+
+\section{Typical references in new ACM Reference Format}
+A paginated journal article \cite{Abril07}, an enumerated
+journal article \cite{Cohen07}, a reference to an entire issue \cite{JCohen96},
+a monograph (whole book) \cite{Kosiur01}, a monograph/whole book in a series (see 2a in spec. document)
+\cite{Harel79}, a divisible-book such as an anthology or compilation \cite{Editor00}
+followed by the same example, however we only output the series if the volume number is given
+\cite{Editor00a} (so Editor00a's series should NOT be present since it has no vol. no.),
+a chapter in a divisible book \cite{Spector90}, a chapter in a divisible book
+in a series \cite{Douglass98}, a multi-volume work as book \cite{Knuth97},
+an article in a proceedings (of a conference, symposium, workshop for example)
+(paginated proceedings article) \cite{Andler79}, a proceedings article
+with all possible elements \cite{Smith10}, an example of an enumerated
+proceedings article \cite{VanGundy07},
+an informally published work \cite{Harel78}, a doctoral dissertation \cite{Clarkson85},
+a master's thesis: \cite{anisi03}, an online document / world wide web
+resource \cite{Thornburg01, Ablamowicz07, Poker06}, a video game (Case 1) \cite{Obama08} and (Case 2) \cite{Novak03}
+and \cite{Lee05} and (Case 3) a patent \cite{JoeScientist001},
+work accepted for publication \cite{rous08}, 'YYYYb'-test for prolific author
+\cite{SaeediMEJ10} and \cite{SaeediJETC10}. Other cites might contain
+'duplicate' DOI and URLs (some SIAM articles) \cite{Kirschmer:2010:AEI:1958016.1958018}.
+Boris / Barbara Beeton: multi-volume works as books
+\cite{MR781536} and \cite{MR781537}.
+
+A couple of citations with DOIs: \cite{2004:ITE:1009386.1010128,
+  Kirschmer:2010:AEI:1958016.1958018}. 
+
+% Appendix
+\appendix
+\section{Switching times}
+
+In this appendix, we measure the channel switching time of Micaz
+\cite{CROSSBOW} sensor devices.  In our experiments, one mote
+alternatingly switches between Channels~11 and~12. Every time after
+the node switches to a channel, it sends out a packet immediately and
+then changes to a new channel as soon as the transmission is finished.
+We measure the number of packets the test mote can send in 10 seconds,
+denoted as $N_{1}$. In contrast, we also measure the same value of the
+test mote without switching channels, denoted as $N_{2}$. We calculate
+the channel-switching time $s$ as
+\begin{displaymath}%
+s=\frac{10}{N_{1}}-\frac{10}{N_{2}}.
+\end{displaymath}%
+By repeating the experiments 100 times, we get the average
+channel-switching time of Micaz motes: 24.3\,$\mu$s.
+
+\section{Supplementary materials}
+
+
+\begin{printonly}
+  See the supplementary materials in the online version
+\end{printonly}
+
+\begin{screenonly}
+\subsection{This is an example of Appendix subsection head}
+
+Channel-switching time is measured as the time length it takes for
+motes to successfully switch from one channel to another. This
+parameter impacts the maximum network throughput, because motes
+cannot receive or send any packet during this period of time, and it
+also affects the efficiency of toggle snooping in MMSN, where motes
+need to sense through channels rapidly.
+
+By repeating experiments 100 times, we get the average
+channel-switching time of Micaz motes: 24.3 $\mu$s. We then conduct
+the same experiments with different Micaz motes, as well as
+experiments with the transmitter switching from Channel 11 to other
+channels. In both scenarios, the channel-switching time does not have
+obvious changes. (In our experiments, all values are in the range of
+23.6 $\mu$s to 24.9 $\mu$s.)
+
+\subsection{Appendix subsection head}
+
+The primary consumer of energy in WSNs is idle listening. The key to
+reduce idle listening is executing low duty-cycle on nodes. Two
+primary approaches are considered in controlling duty-cycles in the
+MAC layer.
+  
+\end{screenonly}
+
+\begin{acks}
+
+The authors would like to thank Dr. Maura Turolla of Telecom
+Italia for providing specifications about the application scenario.
+
+The work is supported by the \grantsponsor{GS501100001809}{National
+  Natural Science Foundation of
+  China}{http://dx.doi.org/10.13039/501100001809} under Grant
+No.:~\grantnum{GS501100001809}{61273304\_a}
+and~\grantnum[http://www.nnsf.cn/youngscientsts]{GS501100001809}{Young
+  Scientsts' Support Program}.
+
+
+\end{acks}
+
+% Bibliography
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{sample-bibliography}
+\end{comment}

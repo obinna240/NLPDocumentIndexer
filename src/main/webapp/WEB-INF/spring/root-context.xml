@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd">
+	
+	
+	
+	<bean id="stage1" class="java.lang.String">
+		<constructor-arg type="String" value="john"/>
+	</bean>
+	<bean id="stage2" class="java.lang.String">
+		<constructor-arg type="String" value="arnold"/>
+	</bean>
+
+	<bean name="lperson" class="java.util.ArrayList">
+	    <constructor-arg>
+	        <list>
+	            <ref bean="stage1" />
+	            <ref bean="stage2" />                
+	        </list>
+	    </constructor-arg>
+	</bean>
+	
+</beans>
